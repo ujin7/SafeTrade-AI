@@ -1,4 +1,4 @@
-import TemplateSection from './TemplateSection'
+﻿import TemplateSection from './TemplateSection'
 
 const GRADE_META = {
   LOW:    { label: '낮음', desc: '일반적인 주의 수준이에요',   color: 'grade-low'    },
@@ -44,6 +44,24 @@ export default function ResultView({ result, onReset }) {
             ))}
           </ul>
         )}
+      </section>
+
+      <section className="ai-result-section">
+        <h3 className="section-title">
+          AI 텍스트 분석
+          <span className="coming-soon-badge">준비중</span>
+        </h3>
+        <div className="ai-result-card">
+          <p className="ai-result-desc">
+            입력하신 거래 내용을 LLM이 직접 분석하여 채팅 패턴·심리적 압박·이상 문구 등
+            체크리스트로 잡기 어려운 위험 신호를 자동으로 탐지합니다.
+          </p>
+          <ul className="ai-feature-list">
+            <li>사기 유형 자동 분류</li>
+            <li>압박·긴급 유도 문구 감지</li>
+            <li>비정상 계좌·결제 패턴 탐지</li>
+          </ul>
+        </div>
       </section>
 
       <TemplateSection triggeredItems={triggered_items} />

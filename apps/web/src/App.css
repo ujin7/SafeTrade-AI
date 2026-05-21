@@ -561,6 +561,81 @@
   border-color: var(--accent-border);
 }
 
+/* ── AI 준비중 안내 (텍스트 입력) ── */
+.ai-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(99, 102, 241, 0.07);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.ai-notice-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+  letter-spacing: 0.3px;
+}
+
+.ai-notice-text {
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* ── AI 분석 준비중 (결과 화면) ── */
+.ai-result-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coming-soon-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  letter-spacing: 0.3px;
+}
+
+.ai-result-card {
+  padding: 16px;
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  opacity: 0.65;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-result-desc {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ai-feature-list {
+  margin: 0;
+  padding: 0 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ai-feature-list li {
+  font-size: 13px;
+  color: var(--text);
+}
+
 /* ── 홈 화면 ── */
 .home-page {
   width: 100%;

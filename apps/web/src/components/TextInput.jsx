@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+﻿import { useState, useRef } from 'react'
 import { CATEGORY_META } from '../data/checklist'
 
 const MIN_LENGTH = 50
@@ -39,6 +39,13 @@ export default function TextInput({ category, onNext, onBack }) {
       </button>
       <p className="step-desc">의심스러운 거래 내용을 붙여넣어 주세요</p>
       <p className="input-guide">채팅 내용, 매물 설명, 계약 안내 문자 등을 그대로 붙여넣으면 됩니다.</p>
+
+      <div className="ai-notice">
+        <span className="ai-notice-badge">AI 분석</span>
+        <span className="ai-notice-text">
+          입력하신 내용은 향후 LLM 기반 자동 위험 감지에 활용될 예정입니다
+        </span>
+      </div>
 
       <div className="textarea-wrap">
         <textarea
