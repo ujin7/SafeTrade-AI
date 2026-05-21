@@ -25,6 +25,7 @@ DISCLAIMER = (
 class AnalyzeRequest(BaseModel):
     category: TradeCategory
     checked_items: list[str]
+    input_text: str | None = None
 
     @field_validator("checked_items")
     @classmethod

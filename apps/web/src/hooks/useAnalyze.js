@@ -4,14 +4,14 @@ export function useAnalyze() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const analyze = useCallback(async ({ category, checked_items }) => {
+  const analyze = useCallback(async ({ category, checked_items, input_text = '' }) => {
     setLoading(true)
     setError(null)
     try {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category, checked_items }),
+        body: JSON.stringify({ category, checked_items, input_text }),
       })
       if (!res.ok) {
         const err = await res.json()
