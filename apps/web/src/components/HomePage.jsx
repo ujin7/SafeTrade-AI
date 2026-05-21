@@ -47,12 +47,12 @@ export default function HomePage({ onStart }) {
 
       <div className="stats-row">
         <div className="stat-chip">
-          <span className="stat-num">32만건</span>
+          <span className="stat-num">10만건+</span>
           <span className="stat-desc">연간 중고거래 사기</span>
         </div>
         <div className="stat-chip">
-          <span className="stat-num">5.6조</span>
-          <span className="stat-desc">전세사기 피해액</span>
+          <span className="stat-num">3,340억</span>
+          <span className="stat-desc">중고거래 피해액</span>
         </div>
         <div className="stat-chip">
           <span className="stat-num">20개</span>
