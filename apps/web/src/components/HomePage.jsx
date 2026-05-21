@@ -20,7 +20,7 @@ function formatDate(iso) {
   return `${mo}.${day} ${hh}:${mm}`
 }
 
-export default function HomePage({ onStart }) {
+export default function HomePage({ onStart, onCases }) {
   const [history, setHistory] = useState([])
 
   useEffect(() => {
@@ -42,6 +42,9 @@ export default function HomePage({ onStart }) {
         </p>
         <button className="start-btn" type="button" onClick={onStart}>
           분석 시작하기
+        </button>
+        <button className="cases-link-btn" type="button" onClick={onCases}>
+          실제 피해 사례 보기 →
         </button>
       </div>
 
@@ -76,10 +79,7 @@ export default function HomePage({ onStart }) {
                   </div>
                   <div className="history-right">
                     <span className="history-score">{item.score}점</span>
-                    <span
-                      className="history-grade"
-                      style={{ color: meta?.color }}
-                    >
+                    <span className="history-grade" style={{ color: meta?.color }}>
                       {meta?.label}
                     </span>
                   </div>

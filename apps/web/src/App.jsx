@@ -4,6 +4,7 @@ import CategorySelect from './components/CategorySelect'
 import TextInput from './components/TextInput'
 import ChecklistForm from './components/ChecklistForm'
 import ResultView from './components/ResultView'
+import CasesPage from './components/CasesPage'
 import { useAnalyze } from './hooks/useAnalyze'
 import './App.css'
 
@@ -67,24 +68,34 @@ export default function App() {
     setResult(null)
   }
 
+  const header = (
+    <header className="app-header">
+      <h1 className="app-title">SafeTrade</h1>
+      <p className="app-subtitle">안전거래 위험도 분석</p>
+    </header>
+  )
+
   if (screen === 'home') {
     return (
       <div className="app">
-        <header className="app-header">
-          <h1 className="app-title">SafeTrade</h1>
-          <p className="app-subtitle">안전거래 위험도 분석</p>
-        </header>
-        <HomePage onStart={handleStart} />
+        {header}
+        <HomePage onStart={handleStart} onCases={() => setScreen('cases')} />
+      </div>
+    )
+  }
+
+  if (screen === 'cases') {
+    return (
+      <div className="app">
+        {header}
+        <CasesPage onBack={() => setScreen('home')} />
       </div>
     )
   }
 
   return (
     <div className="app">
-      <header className="app-header">
-        <h1 className="app-title">SafeTrade</h1>
-        <p className="app-subtitle">안전거래 위험도 분석</p>
-      </header>
+      {header}
 
       <div className="step-indicator">
         {STEPS.map((label, i) => (
