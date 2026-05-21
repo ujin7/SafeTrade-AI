@@ -28,6 +28,32 @@ function saveToHistory(category, result) {
   } catch {}
 }
 
+function AppNav({ screen, onHome, onCases }) {
+  return (
+    <nav className="app-nav">
+      <button className="nav-logo" type="button" onClick={onHome}>
+        🛡️ SafeTrade
+      </button>
+      <div className="nav-links">
+        <button
+          type="button"
+          className={`nav-link ${screen === 'home' || screen === 'analyze' ? 'active' : ''}`}
+          onClick={onHome}
+        >
+          홈
+        </button>
+        <button
+          type="button"
+          className={`nav-link ${screen === 'cases' ? 'active' : ''}`}
+          onClick={onCases}
+        >
+          피해 사례
+        </button>
+      </div>
+    </nav>
+  )
+}
+
 export default function App() {
   const [screen, setScreen] = useState('home')
   const [step, setStep] = useState(0)
@@ -68,66 +94,59 @@ export default function App() {
     setResult(null)
   }
 
-  const header = (
-    <header className="app-header">
-      <h1 className="app-title">SafeTrade</h1>
-      <p className="app-subtitle">안전거래 위험도 분석</p>
-    </header>
-  )
-
-  if (screen === 'home') {
-    return (
-      <div className="app">
-        {header}
-        <HomePage onStart={handleStart} onCases={() => setScreen('cases')} />
-      </div>
-    )
-  }
-
-  if (screen === 'cases') {
-    return (
-      <div className="app">
-        {header}
-        <CasesPage onBack={() => setScreen('home')} />
-      </div>
-    )
-  }
-
   return (
     <div className="app">
-      {header}
+      <AppNav
+        screen={screen}
+        onHome={handleReset}
+        onCases={() => setScreen('cases')}
+      />
 
-      <div className="step-indicator">
-        {STEPS.map((label, i) => (
-          <div
-            key={label}
-            className={`step-dot ${i === step ? 'active' : i < step ? 'done' : ''}`}
-          />
-        ))}
-      </div>
+      <main className="app-main">
+        {screen === 'home' && (
+          <HomePage onStart={handleStart} onCases={() => setScreen('cases')} />
+        )}
 
-      {step === 0 && (
-        <CategorySelect onSelect={handleCategorySelect} />
-      )}
-      {step === 1 && (
-        <TextInput
-          category={category}
-          onNext={handleTextNext}
-          onBack={handleReset}
-        />
-      )}
-      {step === 2 && (
-        <ChecklistForm
-          category={category}
-          onSubmit={handleSubmit}
-          onBack={() => setStep(1)}
-          loading={loading}
-          error={error}
-        />
-      )}
-      {step === 3 && (
-        <ResultView result={result} onReset={handleReset} />
-      )}
+        {screen === 'cases' && (
+          <CasesPage onBack={() => setScreen('home')} />
+        )}
+
+        {screen === 'analyze' && (
+          <>
+            <div className="step-indicator">
+              {STEPS.map((label, i) => (
+                <div
+                  key={label}
+                  className={`step-dot ${i === step ? 'active' : i < step ? 'done' : ''}`}
+                />
+              ))}
+            </div>
+
+            {step === 0 && (
+              <CategorySelect onSelect={handleCategorySelect} />
+            )}
+            {step === 1 && (
+              <TextInput
+                category={category}
+                onNext={handleTextNext}
+                onBack={handleReset}
+              />
+            )}
+            {step === 2 && (
+              <ChecklistForm
+                category={category}
+                onSubmit={handleSubmit}
+                onBack={() => setStep(1)}
+                loading={loading}
+                error={error}
+              />
+            )}
+            {step === 3 && (
+              <ResultView result={result} onReset={handleReset} />
+            )}
+          </>
+        )}
+      </main>
     </div>
   )
 }
