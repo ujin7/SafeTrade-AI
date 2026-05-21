@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { CHECKLISTS, CATEGORY_META } from '../data/checklist'
 
 export default function ChecklistForm({ category, onSubmit, onBack, loading, error }) {
@@ -12,6 +12,7 @@ export default function ChecklistForm({ category, onSubmit, onBack, loading, err
   }, {})
 
   function toggle(id) {
+    if (loading) return
     setChecked(prev => {
       const next = new Set(prev)
       next.has(id) ? next.delete(id) : next.add(id)
@@ -27,8 +28,16 @@ export default function ChecklistForm({ category, onSubmit, onBack, loading, err
   const checkedCount = checked.size
 
   return (
-    <div className="step-panel">
-      <button type="button" className="back-btn" onClick={onBack}>
+    <div className="step-panel" style={{ position: 'relative' }}>
+      {loading && (
+        <div className="loading-overlay">
+          <div className="spinner" />
+          <p className="loading-text">분석 중이에요</p>
+          <p className="loading-hint">보통 1~2초 걸려요</p>
+        </div>
+      )}
+
+      <button type="button" className="back-btn" onClick={onBack} disabled={loading}>
         ← {CATEGORY_META[category].label}
       </button>
       <p className="step-desc">해당하는 항목을 모두 선택하세요</p>
@@ -44,6 +53,7 @@ export default function ChecklistForm({ category, onSubmit, onBack, loading, err
                     type="checkbox"
                     checked={checked.has(item.id)}
                     onChange={() => toggle(item.id)}
+                    disabled={loading}
                   />
                   <span>{item.label}</span>
                 </label>
@@ -56,16 +66,10 @@ export default function ChecklistForm({ category, onSubmit, onBack, loading, err
 
         <div className="form-footer">
           {checkedCount > 0 && (
-            <span className="checked-count">
-              {checkedCount}개 선택됨
-            </span>
+            <span className="checked-count">{checkedCount}개 선택됨</span>
           )}
-          <button
-            type="submit"
-            className="submit-btn"
-            disabled={loading}
-          >
-            {loading ? '분석 중...' : '분석하기'}
+          <button type="submit" className="submit-btn" disabled={loading}>
+            분석하기
           </button>
         </div>
       </form>
