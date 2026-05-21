@@ -1,3 +1,5 @@
+import TemplateSection from './TemplateSection'
+
 const GRADE_META = {
   LOW:    { label: '낮음', desc: '일반적인 주의 수준이에요',   color: 'grade-low'    },
   MEDIUM: { label: '보통', desc: '추가 확인을 권장해요',       color: 'grade-medium' },
@@ -43,6 +45,8 @@ export default function ResultView({ result, onReset }) {
           </ul>
         )}
       </section>
+
+      <TemplateSection triggeredItems={triggered_items} />
 
       <p className="disclaimer">{disclaimer}</p>
 
