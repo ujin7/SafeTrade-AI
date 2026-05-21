@@ -329,6 +329,30 @@
   cursor: not-allowed;
 }
 
+/* ── 점수 게이지 ── */
+.gauge-wrap {
+  width: 100%;
+  max-width: 220px;
+  margin: 0 auto 4px;
+}
+
+.gauge-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.gauge-num {
+  font-size: 42px;
+  font-weight: 700;
+  font-family: inherit;
+}
+
+.gauge-sub {
+  font-size: 14px;
+  font-family: inherit;
+}
+
 /* ── 결과 화면 ── */
 .score-card {
   border-radius: 16px;

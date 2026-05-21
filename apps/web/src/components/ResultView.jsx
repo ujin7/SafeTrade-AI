@@ -1,4 +1,5 @@
-﻿import TemplateSection from './TemplateSection'
+﻿import ScoreGauge from './ScoreGauge'
+import TemplateSection from './TemplateSection'
 
 const GRADE_META = {
   LOW:    { label: '낮음', desc: '일반적인 주의 수준이에요',   color: 'grade-low'    },
@@ -15,8 +16,7 @@ export default function ResultView({ result, onReset }) {
   return (
     <div className="step-panel">
       <div className={`score-card ${gradeMeta.color}`}>
-        <div className="score-number">{total_score}</div>
-        <div className="score-label">/ 100</div>
+        <ScoreGauge score={total_score} grade={grade} />
         <div className="grade-badge">{gradeMeta.label}</div>
         <p className="grade-desc">{gradeMeta.desc}</p>
       </div>
