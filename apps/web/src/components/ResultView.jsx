@@ -1,5 +1,6 @@
 ﻿import ScoreGauge from './ScoreGauge'
 import TemplateSection from './TemplateSection'
+import { FRAUD_CASES } from '../data/cases'
 
 const GRADE_META = {
   LOW:    { label: '낮음', desc: '일반적인 주의 수준이에요',   color: 'grade-low'    },
@@ -9,9 +10,24 @@ const GRADE_META = {
 
 const SEVERITY_LABEL = { HIGH: '높음', MEDIUM: '중간', LOW: '낮음' }
 
+const CATEGORY_COLOR = {
+  used_trade:  { badge: 'case-badge-trade' },
+  real_estate: { badge: 'case-badge-estate' },
+}
+
+function getRelatedCases(triggeredItems) {
+  const triggeredIds = new Set(triggeredItems.map(i => i.id))
+  return FRAUD_CASES
+    .map(c => ({ ...c, overlap: c.signalIds.filter(id => triggeredIds.has(id)).length }))
+    .filter(c => c.overlap > 0)
+    .sort((a, b) => b.overlap - a.overlap)
+    .slice(0, 2)
+}
+
 export default function ResultView({ result, onReset }) {
   const { total_score, grade, triggered_items, disclaimer } = result
   const gradeMeta = GRADE_META[grade]
+  const relatedCases = getRelatedCases(triggered_items)
 
   return (
     <div className="step-panel result-panel">
@@ -68,6 +84,26 @@ export default function ResultView({ result, onReset }) {
         </section>
 
         <TemplateSection triggeredItems={triggered_items} />
+
+        {relatedCases.length > 0 && (
+          <section className="related-section">
+            <h3 className="section-title">유사 피해 사례</h3>
+            <ul className="related-list">
+              {relatedCases.map(c => (
+                <li key={c.id} className="related-item">
+                  <div className="related-top">
+                    <span className={`case-badge ${CATEGORY_COLOR[c.category].badge}`}>
+                      {c.categoryLabel}
+                    </span>
+                    <span className="related-damage">{c.damage} 피해</span>
+                  </div>
+                  <p className="related-title">{c.title}</p>
+                  <p className="related-lesson">💡 {c.lesson}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <p className="disclaimer">{disclaimer}</p>
 

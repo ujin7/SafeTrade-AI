@@ -635,6 +635,61 @@
   padding-left: 2px;
 }
 
+/* ── 유사 피해 사례 (결과 화면) ── */
+.related-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.related-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.related-item {
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.related-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.related-damage {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ef4444;
+}
+
+.related-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.related-lesson {
+  font-size: 12px;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.5;
+  padding: 8px 10px;
+  background: rgba(34,197,94,.06);
+  border-radius: 6px;
+}
+
 /* ── 면책 문구 ── */
 .disclaimer {
   font-size: 12px;
