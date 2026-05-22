@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { scoreCheck } from '../data/checklist'
 
 export function useAnalyze() {
   const [loading, setLoading] = useState(false)
@@ -19,12 +20,11 @@ export function useAnalyze() {
       }
       return await res.json()
     } catch (e) {
-      const msg =
-        e instanceof TypeError
-          ? '인터넷 연결을 확인해주세요.'
-          : e.message
-      setError(msg)
-      return null
+      if (e instanceof TypeError) {
+        return scoreCheck(category, checked_items)
+      }
+      setError(e.message)
+      return scoreCheck(category, checked_items)
     } finally {
       setLoading(false)
     }

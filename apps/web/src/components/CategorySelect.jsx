@@ -7,19 +7,20 @@ const ICONS = {
 
 export default function CategorySelect({ onSelect }) {
   return (
-    <div className="step-panel">
-      <p className="step-desc">어떤 거래를 확인하시나요?</p>
+    <div className="wiz-card rise">
+      <h2 className="step-title">어떤 거래를 확인하시나요?</h2>
+      <p className="step-sub">거래 유형을 선택하면 맞춤 체크리스트를 안내해 드립니다.</p>
       <div className="category-grid">
         {Object.entries(CATEGORY_META).map(([key, { label, desc }]) => (
           <button
             key={key}
             type="button"
-            className="category-card"
+            className="cat-card"
             onClick={() => onSelect(key)}
           >
-            <span className="category-icon">{ICONS[key]}</span>
-            <span className="category-label">{label}</span>
-            <span className="category-desc">{desc}</span>
+            <span className="cat-icon">{ICONS[key]}</span>
+            <span className="cat-label">{label}</span>
+            <span className="cat-desc">{desc}</span>
           </button>
         ))}
       </div>

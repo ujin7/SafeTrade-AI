@@ -1,20 +1,11 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { FRAUD_CASES } from '../data/cases'
 
-const CATEGORY_COLOR = {
-  used_trade:  { badge: 'case-badge-trade',    border: 'case-card-trade' },
-  real_estate: { badge: 'case-badge-estate',   border: 'case-card-estate' },
-}
-
-export default function CasesPage({ onBack }) {
+export default function CasesPage() {
   const [open, setOpen] = useState(null)
 
   return (
-    <div className="step-panel">
-      <button type="button" className="back-btn" onClick={onBack}>
-        ← 홈으로
-      </button>
-
+    <div className="cases-page rise">
       <div className="cases-header">
         <h2 className="cases-title">실제 피해 사례</h2>
         <p className="cases-subtitle">
@@ -24,18 +15,19 @@ export default function CasesPage({ onBack }) {
 
       <ul className="cases-list">
         {FRAUD_CASES.map(c => {
-          const colors = CATEGORY_COLOR[c.category]
           const isOpen = open === c.id
+          const borderCls = c.category === 'used_trade' ? 'case-card-trade' : 'case-card-estate'
+          const badgeCls  = c.category === 'used_trade' ? 'case-badge-trade' : 'case-badge-estate'
           return (
-            <li key={c.id} className={`case-card ${colors.border}`}>
+            <li key={c.id} className={`case-card ${borderCls}`}>
               <button
                 type="button"
                 className="case-card-btn"
                 onClick={() => setOpen(isOpen ? null : c.id)}
               >
                 <div className="case-top">
-                  <span className={`case-badge ${colors.badge}`}>
-                    {c.categoryLabel}
+                  <span className={`case-badge ${badgeCls}`}>
+                    {c.categoryLabel ?? c.category}
                   </span>
                   <span className="case-damage">{c.damage} 피해</span>
                 </div>

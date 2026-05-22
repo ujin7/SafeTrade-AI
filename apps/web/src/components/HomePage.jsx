@@ -1,35 +1,29 @@
-﻿import { useEffect, useState } from 'react'
-
 const CATEGORY_LABEL = {
   used_trade: '중고거래',
   real_estate: '부동산',
 }
 
 const GRADE_META = {
-  LOW:    { label: '낮음', color: '#22c55e' },
-  MEDIUM: { label: '보통', color: '#f59e0b' },
-  HIGH:   { label: '높음', color: '#ef4444' },
+  LOW:    { label: '낮음', color: 'var(--safe)'   },
+  MEDIUM: { label: '보통', color: 'var(--warn)'   },
+  HIGH:   { label: '높음', color: 'var(--danger)' },
 }
 
 function formatDate(iso) {
   const d = new Date(iso)
-  const mo = (d.getMonth() + 1).toString()
-  const day = d.getDate().toString()
-  const hh = d.getHours().toString().padStart(2, '0')
-  const mm = d.getMinutes().toString().padStart(2, '0')
-  return `${mo}.${day} ${hh}:${mm}`
+  return `${d.getMonth() + 1}.${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
 const HOW_STEPS = [
   {
     icon: '📋',
-    title: '체크리스트 선택',
+    title: '거래 유형 선택',
     desc: '중고거래 또는 부동산 중 해당하는 거래 유형을 선택하세요.',
   },
   {
-    icon: '🔍',
-    title: '위험 신호 확인',
-    desc: '거래 상대에게서 느낀 의심 신호를 체크리스트에서 선택하세요.',
+    icon: '✍️',
+    title: '거래 내용 입력',
+    desc: '의심스러운 채팅·문자 내용을 붙여넣으면 AI가 위험 신호를 자동 감지합니다.',
   },
   {
     icon: '📊',
@@ -38,32 +32,26 @@ const HOW_STEPS = [
   },
 ]
 
-export default function HomePage({ onStart, onCases }) {
-  const [history, setHistory] = useState([])
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('safetrade_history')
-      if (stored) setHistory(JSON.parse(stored))
-    } catch {}
-  }, [])
-
+export default function HomePage({ onStart, onCases, history }) {
   return (
-    <div className="home-page">
-      <div className="hero">
+    <div className="home-page rise">
+      <div className="hero-card">
         <div className="hero-icon">🛡️</div>
         <h2 className="hero-title">
           거래 전, 위험 신호를<br />미리 확인하세요
         </h2>
         <p className="hero-subtitle">
-          체크리스트 기반 분석으로<br />사기 위험을 사전에 예방하세요
+          체크리스트 + AI 기반 분석으로<br />
+          사기 위험을 사전에 예방하세요
         </p>
-        <button className="start-btn" type="button" onClick={onStart}>
-          분석 시작하기
-        </button>
-        <button className="cases-link-btn" type="button" onClick={onCases}>
-          실제 피해 사례 보기 →
-        </button>
+        <div className="hero-actions">
+          <button className="start-btn" type="button" onClick={onStart}>
+            분석 시작하기
+          </button>
+          <button className="cases-link-btn" type="button" onClick={onCases}>
+            실제 피해 사례 보기 →
+          </button>
+        </div>
       </div>
 
       <div className="stats-row">
@@ -87,7 +75,7 @@ export default function HomePage({ onStart, onCases }) {
           {HOW_STEPS.map((step, i) => (
             <li key={i} className="how-item">
               <div className="how-icon">{step.icon}</div>
-              <div className="how-body">
+              <div>
                 <p className="how-step-title">{step.title}</p>
                 <p className="how-step-desc">{step.desc}</p>
               </div>
@@ -99,7 +87,7 @@ export default function HomePage({ onStart, onCases }) {
       <section className="history-section">
         <h3 className="history-title">최근 분석 내역</h3>
         {history.length > 0 ? (
-          <ul className="history-list">
+          <ul>
             {history.map(item => {
               const meta = GRADE_META[item.grade]
               return (

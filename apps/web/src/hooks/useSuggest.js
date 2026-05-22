@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { suggestFromText } from '../data/checklist'
 
 export function useSuggest() {
   const [loading, setLoading] = useState(false)
@@ -20,9 +21,11 @@ export function useSuggest() {
       const data = await res.json()
       return data.suggested_ids ?? []
     } catch (e) {
-      const msg = e instanceof TypeError ? '인터넷 연결을 확인해주세요.' : e.message
-      setError(msg)
-      return []
+      if (e instanceof TypeError) {
+        return suggestFromText(category, input_text)
+      }
+      setError(e.message)
+      return suggestFromText(category, input_text)
     } finally {
       setLoading(false)
     }
