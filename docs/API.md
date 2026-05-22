@@ -1,4 +1,4 @@
-﻿# API 명세
+# API 명세
 
 ## 기본 정보
 
@@ -12,9 +12,17 @@
 
 ---
 
-## 엔드포인트
+## 엔드포인트 목록
 
-### GET /
+| 메서드 | 경로 | 역할 |
+|--------|------|------|
+| GET | `/` | 서버 상태 확인 |
+| POST | `/api/suggest` | 텍스트 → AI 위험 신호 추출 |
+| POST | `/api/analyze` | 신호 목록 → 규칙 기반 점수 계산 |
+
+---
+
+## GET /
 
 서버 상태 확인용.
 
@@ -25,11 +33,76 @@
 
 ---
 
-### POST /api/analyze
+## POST /api/suggest
 
-체크리스트 항목을 받아 위험도 점수·등급·신호 목록을 반환한다.
+거래 텍스트를 받아 LLM(Claude Haiku)이 해당하는 위험 신호 ID를 추출해 반환한다.
 
-#### 요청
+**LLM 역할 제한**: 신호 추출만 수행. 점수 계산·등급 판정은 하지 않는다.
+
+### 요청
+
+```
+POST /api/suggest
+Content-Type: application/json
+```
+
+**요청 바디**
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| `category` | string | ✅ | 분석 카테고리. `used_trade` 또는 `real_estate` |
+| `input_text` | string | ✅ | 분석할 거래 텍스트 (최소 10자) |
+
+**요청 예시**
+```json
+{
+  "category": "used_trade",
+  "input_text": "오늘만 이 가격이에요. 지금 바로 계좌로 입금해주시면 바로 보내드릴게요. 안전결제는 수수료가 있어서요."
+}
+```
+
+### 응답 (200 OK)
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `suggested_ids` | string[] | 탐지된 위험 신호 ID 배열 |
+
+**응답 예시**
+```json
+{
+  "suggested_ids": [
+    "junggo_price_002",
+    "junggo_payment_002"
+  ]
+}
+```
+
+### 오류 응답
+
+| 상태 코드 | 케이스 |
+|----------|--------|
+| 400 | 유효하지 않은 `category` 값 |
+| 400 | `input_text`가 10자 미만 |
+
+**오류 예시**
+```json
+{ "detail": "Invalid category" }
+```
+
+### 동작 특성
+
+- LLM 호출 실패 또는 파싱 오류 시 빈 배열 `[]`을 반환 (폴백, 서비스 중단 없음)
+- 응답 ID는 해당 카테고리의 신호 데이터셋에 존재하는 것만 포함 (검증 후 반환)
+
+---
+
+## POST /api/analyze
+
+신호 ID 목록을 받아 규칙 기반으로 위험도 점수·등급·신호 목록을 반환한다.
+
+사용자가 `/api/suggest` 결과를 검토·수정한 최종 신호 목록을 이 엔드포인트로 전달한다.
+
+### 요청
 
 ```
 POST /api/analyze
@@ -41,15 +114,15 @@ Content-Type: application/json
 | 필드 | 타입 | 필수 | 설명 |
 |------|------|------|------|
 | `category` | string | ✅ | 분석 카테고리. `used_trade` 또는 `real_estate` |
-| `checked_items` | string[] | ✅ | 선택된 체크리스트 항목 ID 배열 (빈 배열 허용) |
-| `input_text` | string | ❌ | 거래 내용 텍스트 (향후 AI 분석에 활용 예정, 현재는 수집만) |
+| `checked_items` | string[] | ✅ | 최종 선택된 위험 신호 ID 배열 (빈 배열 허용) |
+| `input_text` | string | ❌ | 원문 텍스트 (현재는 수집만, 향후 근거 표시에 활용) |
 
 **요청 예시 — 중고거래**
 ```json
 {
   "category": "used_trade",
-  "checked_items": ["junggo_seller_002", "junggo_payment_003"],
-  "input_text": "오늘만 이 가격이에요. 지금 바로 입금해주시면..."
+  "checked_items": ["junggo_price_002", "junggo_payment_002", "junggo_payment_003"],
+  "input_text": "오늘만 이 가격이에요. 계좌로 입금해주세요."
 }
 ```
 
@@ -61,9 +134,7 @@ Content-Type: application/json
 }
 ```
 
----
-
-#### 응답 (200 OK)
+### 응답 (200 OK)
 
 | 필드 | 타입 | 설명 |
 |------|------|------|
@@ -76,10 +147,10 @@ Content-Type: application/json
 
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| `id` | string | 체크리스트 항목 ID |
-| `category` | string | 소속 카테고리 (`used_trade` / `real_estate`) |
-| `label` | string | 항목명 |
-| `score` | integer | 해당 항목 점수 |
+| `id` | string | 신호 ID |
+| `category` | string | 소속 카테고리 |
+| `label` | string | 신호 설명 |
+| `score` | integer | 해당 신호 점수 |
 | `severity` | string | 심각도. `HIGH` / `MEDIUM` / `LOW` |
 | `description` | string | 위험 이유 설명 (1줄) |
 
@@ -90,60 +161,46 @@ Content-Type: application/json
   "grade": "HIGH",
   "triggered_items": [
     {
-      "id": "junggo_seller_002",
-      "category": "used_trade",
-      "label": "더치트·사이버캅에서 해당 번호/계좌 사기 이력이 조회된다",
-      "score": 40,
-      "severity": "HIGH",
-      "description": "더치트 등록 이력은 실제 피해 근거로, 즉시 거래를 중단하세요."
-    },
-    {
       "id": "junggo_payment_003",
       "category": "used_trade",
       "label": "외부 링크로 안전결제 URL을 별도로 보내왔다",
       "score": 35,
       "severity": "HIGH",
-      "description": "가짜 안전결제 피싱 수법입니다. 플랫폼 공식 결제만 사용하세요."
+      "description": "경찰청: 가짜 안전결제 피싱 급증"
+    },
+    {
+      "id": "junggo_payment_002",
+      "category": "used_trade",
+      "label": "플랫폼 공식 안전결제 대신 계좌이체를 요구한다",
+      "score": 25,
+      "severity": "MEDIUM",
+      "description": "경찰청 주요 수법 1위: 선입금 후 잠적"
+    },
+    {
+      "id": "junggo_price_002",
+      "category": "used_trade",
+      "label": "\"오늘만\", \"급매\" 등 긴박감을 조성한다",
+      "score": 15,
+      "severity": "LOW",
+      "description": "심리적 압박으로 판단력 저하 유도"
     }
   ],
   "disclaimer": "이 결과는 참고용 점검 도구이며, 법적 판단이나 전문가 의견을 대체하지 않습니다. 동일한 입력에 동일한 점수가 산출되며, 실제 거래 결정은 전문가와 상담 후 진행하세요."
 }
 ```
 
----
-
-#### 오류 응답 (422 Unprocessable Entity)
-
-입력 값이 유효하지 않을 때 반환된다.
-
-**오류 케이스**
+### 오류 응답 (422 Unprocessable Entity)
 
 | 케이스 | 설명 |
 |--------|------|
 | `category` 누락 | 필수 필드 없음 |
 | 유효하지 않은 `category` | `used_trade`, `real_estate` 외 값 |
-| 잘못된 카테고리 항목 | `real_estate` 카테고리에 `junggo_*` ID 전달 등 |
+| 잘못된 카테고리 항목 | `real_estate` 카테고리에 `junggo_*` ID 전달 |
 | `checked_items` 중복 | 동일 ID가 2개 이상 포함 |
 
-**오류 응답 예시 — 잘못된 카테고리**
+**오류 예시**
 ```json
-{
-  "detail": "category 'real_estate'에 속하지 않는 항목 ID: ['junggo_seller_002']"
-}
-```
-
-**오류 응답 예시 — Pydantic 검증 실패**
-```json
-{
-  "detail": [
-    {
-      "type": "literal_error",
-      "loc": ["body", "category"],
-      "msg": "Input should be 'used_trade' or 'real_estate'",
-      "input": "invalid_category"
-    }
-  ]
-}
+{ "detail": "category 'real_estate'에 속하지 않는 항목 ID: ['junggo_seller_002']" }
 ```
 
 ---
@@ -161,7 +218,7 @@ Content-Type: application/json
 
 ---
 
-## 체크리스트 항목 ID
+## 위험 신호 ID 목록
 
 ### 중고거래 (`used_trade`)
 
@@ -182,9 +239,9 @@ Content-Type: application/json
 
 | ID | 설명 | 점수 | 심각도 |
 |----|------|------|--------|
-| `jeonse_price_001` | 전세가율 80% 이상 | 30 | MEDIUM |
+| `jeonse_price_001` | 전세가율 80% 이상 | 30 | HIGH |
 | `jeonse_price_002` | 주변 시세보다 지나치게 저렴 | 20 | MEDIUM |
-| `jeonse_registry_001` | 근저당권 설정 | 30 | MEDIUM |
+| `jeonse_registry_001` | 근저당권 설정 | 30 | HIGH |
 | `jeonse_registry_002` | 등기부 갑구에 "신탁" 표기 | 35 | HIGH |
 | `jeonse_registry_003` | 소유권 최근 6개월 내 변경 | 20 | MEDIUM |
 | `jeonse_registry_004` | 체납세금·가압류 기록 | 25 | MEDIUM |
@@ -195,10 +252,31 @@ Content-Type: application/json
 
 ---
 
+## 분석 플로우 예시 (전체)
+
+```
+1. POST /api/suggest
+   { category: "used_trade", input_text: "오늘만 이 가격..." }
+   → { suggested_ids: ["junggo_price_002", "junggo_payment_002"] }
+
+2. 사용자가 결과 검토 후 junggo_payment_003 추가
+
+3. POST /api/analyze
+   { category: "used_trade", checked_items: ["junggo_price_002", "junggo_payment_002", "junggo_payment_003"] }
+   → { total_score: 75, grade: "HIGH", triggered_items: [...] }
+```
+
+---
+
 ## 로컬 테스트 예시 (PowerShell)
 
 ```powershell
-# 정상 요청 — HIGH 시나리오
+# AI 신호 추출
+curl -X POST http://localhost:8000/api/suggest `
+  -H "Content-Type: application/json" `
+  -d '{"category":"used_trade","input_text":"오늘만 이 가격이에요. 계좌로 먼저 보내주세요."}'
+
+# 규칙 기반 점수 계산
 curl -X POST http://localhost:8000/api/analyze `
   -H "Content-Type: application/json" `
   -d '{"category":"used_trade","checked_items":["junggo_seller_002","junggo_payment_003"]}'
@@ -207,9 +285,4 @@ curl -X POST http://localhost:8000/api/analyze `
 curl -X POST http://localhost:8000/api/analyze `
   -H "Content-Type: application/json" `
   -d '{"category":"used_trade","checked_items":[]}'
-
-# 422 — 잘못된 카테고리
-curl -X POST http://localhost:8000/api/analyze `
-  -H "Content-Type: application/json" `
-  -d '{"category":"invalid","checked_items":[]}'
 ```
