@@ -96,6 +96,12 @@ export default function ChecklistForm({
 
       {error && <p className="error-msg">{error}</p>}
 
+      {checkedCount === 0 && !loading && (
+        <p className="zero-signal-hint">
+          선택된 신호가 없으면 위험도 낮음(0점)으로 분석됩니다.
+        </p>
+      )}
+
       <div className="form-footer">
         <span className="checked-count">
           {checkedCount > 0 ? `${checkedCount}개 신호 선택됨` : '선택된 신호 없음'}
@@ -103,7 +109,7 @@ export default function ChecklistForm({
         <button
           type="button"
           className="submit-btn"
-          disabled={loading || checkedCount === 0}
+          disabled={loading}
           onClick={onSubmit}
         >
           위험도 분석하기
