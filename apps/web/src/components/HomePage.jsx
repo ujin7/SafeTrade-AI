@@ -20,6 +20,24 @@ function formatDate(iso) {
   return `${mo}.${day} ${hh}:${mm}`
 }
 
+const HOW_STEPS = [
+  {
+    icon: '📋',
+    title: '체크리스트 선택',
+    desc: '중고거래 또는 부동산 중 해당하는 거래 유형을 선택하세요.',
+  },
+  {
+    icon: '🔍',
+    title: '위험 신호 확인',
+    desc: '거래 상대에게서 느낀 의심 신호를 체크리스트에서 선택하세요.',
+  },
+  {
+    icon: '📊',
+    title: '위험도 리포트',
+    desc: '선택한 신호를 분석해 위험도 점수와 대처 방법을 알려드립니다.',
+  },
+]
+
 export default function HomePage({ onStart, onCases }) {
   const [history, setHistory] = useState([])
 
@@ -63,9 +81,24 @@ export default function HomePage({ onStart, onCases }) {
         </div>
       </div>
 
-      {history.length > 0 && (
-        <section className="history-section">
-          <h3 className="history-title">최근 분석 내역</h3>
+      <section className="how-section">
+        <h3 className="how-title">이렇게 사용하세요</h3>
+        <ol className="how-list">
+          {HOW_STEPS.map((step, i) => (
+            <li key={i} className="how-item">
+              <div className="how-icon">{step.icon}</div>
+              <div className="how-body">
+                <p className="how-step-title">{step.title}</p>
+                <p className="how-step-desc">{step.desc}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="history-section">
+        <h3 className="history-title">최근 분석 내역</h3>
+        {history.length > 0 ? (
           <ul className="history-list">
             {history.map(item => {
               const meta = GRADE_META[item.grade]
@@ -87,8 +120,16 @@ export default function HomePage({ onStart, onCases }) {
               )
             })}
           </ul>
-        </section>
-      )}
+        ) : (
+          <div className="history-empty">
+            <p className="history-empty-text">아직 분석 내역이 없습니다.</p>
+            <p className="history-empty-sub">분석을 시작하면 여기에 기록됩니다.</p>
+            <button className="history-empty-btn" type="button" onClick={onStart}>
+              첫 분석 시작하기
+            </button>
+          </div>
+        )}
+      </section>
     </div>
   )
 }
