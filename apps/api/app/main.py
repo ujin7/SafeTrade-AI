@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import analyze
+from app.routers import analyze, suggest
 
 app = FastAPI(title="SafeTrade API")
 
@@ -13,6 +13,7 @@ app.add_middleware(
 )
 
 app.include_router(analyze.router, prefix="/api")
+app.include_router(suggest.router, prefix="/api")
 
 
 @app.get("/")

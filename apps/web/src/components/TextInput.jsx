@@ -15,7 +15,7 @@ function detectSensitive(text) {
   return SENSITIVE_PATTERNS.filter(p => p.regex.test(text)).map(p => p.label)
 }
 
-export default function TextInput({ category, onNext, onBack }) {
+export default function TextInput({ category, onNext, onBack, loading = false }) {
   const [text, setText] = useState('')
   const textareaRef = useRef(null)
 
@@ -91,10 +91,10 @@ export default function TextInput({ category, onNext, onBack }) {
       <button
         type="button"
         className="submit-btn"
-        disabled={!isReady}
+        disabled={!isReady || loading}
         onClick={() => onNext(text)}
       >
-        다음 — 체크리스트 선택
+        {loading ? 'AI 분석 중...' : '다음 — 체크리스트 선택'}
       </button>
     </div>
   )

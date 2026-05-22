@@ -789,6 +789,36 @@
   line-height: 1.4;
 }
 
+/* ── AI 추천 안내 (체크리스트) ── */
+.ai-suggest-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.check-item.ai-suggested {
+  border-color: rgba(99, 102, 241, 0.4);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.ai-tag {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+  letter-spacing: 0.3px;
+  margin-left: auto;
+}
+
 /* ── AI 분석 준비중 (결과 화면) ── */
 .ai-result-section {
   display: flex;

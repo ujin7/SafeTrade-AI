@@ -6,6 +6,7 @@ import ChecklistForm from './components/ChecklistForm'
 import ResultView from './components/ResultView'
 import CasesPage from './components/CasesPage'
 import { useAnalyze } from './hooks/useAnalyze'
+import { useSuggest } from './hooks/useSuggest'
 import './App.css'
 
 const STEPS = ['카테고리', '내용 입력', '체크리스트', '결과']
@@ -60,7 +61,9 @@ export default function App() {
   const [category, setCategory] = useState(null)
   const [inputText, setInputText] = useState('')
   const [result, setResult] = useState(null)
+  const [suggestedItems, setSuggestedItems] = useState([])
   const { analyze, loading, error } = useAnalyze()
+  const { suggest, loading: suggestLoading } = useSuggest()
 
   function handleStart() {
     setScreen('analyze')
@@ -72,8 +75,10 @@ export default function App() {
     setStep(1)
   }
 
-  function handleTextNext(text) {
+  async function handleTextNext(text) {
     setInputText(text)
+    const ids = await suggest({ category, input_text: text })
+    setSuggestedItems(ids)
     setStep(2)
   }
 
@@ -92,6 +97,7 @@ export default function App() {
     setCategory(null)
     setInputText('')
     setResult(null)
+    setSuggestedItems([])
   }
 
   return (
@@ -130,6 +136,7 @@ export default function App() {
                 category={category}
                 onNext={handleTextNext}
                 onBack={handleReset}
+                loading={suggestLoading}
               />
             )}
             {step === 2 && (
@@ -139,6 +146,7 @@ export default function App() {
                 onBack={() => setStep(1)}
                 loading={loading}
                 error={error}
+                suggestedItems={suggestedItems}
               />
             )}
             {step === 3 && (
